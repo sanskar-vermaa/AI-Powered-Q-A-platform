@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import func, select
+from sqlalchemy import func, select, true
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -17,7 +17,7 @@ def site_stats(db: Session = Depends(get_db)):
         users=db.scalar(select(func.count(User.id))) or 0,
         questions=questions,
         answers=db.scalar(select(func.count(Answer.id))) or 0,
-        ai_answers=db.scalar(select(func.count(Answer.id)).where(Answer.is_ai.is_(True))) or 0,
+        ai_answers=db.scalar(select(func.count(Answer.id)).where(Answer.is_ai == true())) or 0,
         tags=db.scalar(select(func.count(Tag.id))) or 0,
         answered_ratio=round(answered / questions, 3) if questions else 0.0,
     )
@@ -28,7 +28,7 @@ def leaderboard(db: Session = Depends(get_db), limit: int = Query(10, ge=1, le=1
     answer_count = select(func.count(Answer.id)).where(Answer.author_id == User.id).correlate(User).scalar_subquery()
     rows = db.execute(
         select(User.username, User.reputation, answer_count.label("answer_count"))
-        .where(User.is_active.is_(True))
+        .where(User.is_active == true())
         .order_by(User.reputation.desc(), User.id)
         .limit(limit)
     ).all()
