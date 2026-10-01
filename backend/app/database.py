@@ -1,7 +1,8 @@
 from collections.abc import Iterator
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from app.config import get_settings
 
@@ -11,8 +12,22 @@ class Base(DeclarativeBase):
 
 
 def _make_engine(url: str):
-    connect_args = {"check_same_thread": False} if url.startswith("sqlite") else {}
-    return create_engine(url, connect_args=connect_args)
+    if not url.startswith("sqlite"):
+        return create_engine(url, pool_pre_ping=True)
+
+    kwargs = {"connect_args": {"check_same_thread": False}}
+    if url in ("sqlite://", "sqlite:///:memory:"):
+        # Share one in-memory database across all connections.
+        kwargs["poolclass"] = StaticPool
+    engine = create_engine(url, **kwargs)
+
+    @event.listens_for(engine, "connect")
+    def _enable_foreign_keys(dbapi_connection, _):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
+
+    return engine
 
 
 engine = _make_engine(get_settings().database_url)
