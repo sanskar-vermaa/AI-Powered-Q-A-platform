@@ -35,8 +35,18 @@ def jaccard(a: set[str], b: set[str]) -> float:
     return len(a & b) / len(a | b)
 
 
+_CODE_FENCE_RE = re.compile(r"```.*?(```|$)", re.DOTALL)
+_MARKDOWN_RE = re.compile(r"[`*_#>~]|!?\[([^\]]*)\]\([^)]*\)")
+
+
+def strip_markdown(text: str) -> str:
+    """Reduce Markdown to plain text for previews: drop code blocks, keep link text."""
+    text = _CODE_FENCE_RE.sub(" ", text)
+    return _MARKDOWN_RE.sub(lambda m: m.group(1) or "", text)
+
+
 def excerpt(text: str, length: int = 200) -> str:
-    flat = " ".join(text.split())
+    flat = " ".join(strip_markdown(text).split())
     if len(flat) <= length:
         return flat
     return flat[: length - 1].rstrip() + "…"
