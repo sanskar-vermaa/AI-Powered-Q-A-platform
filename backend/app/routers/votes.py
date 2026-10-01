@@ -40,7 +40,9 @@ def _apply_vote(db: Session, user: User, target_type: str, target: Question | An
 
 
 @router.post("/questions/{question_id}/vote", response_model=VoteResult)
-def vote_question(question_id: int, payload: VoteIn, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def vote_question(
+    question_id: int, payload: VoteIn, user: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
     question = db.get(Question, question_id)
     if question is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Question not found")

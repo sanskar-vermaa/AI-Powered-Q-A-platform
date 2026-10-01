@@ -18,7 +18,9 @@ class UserAdminUpdate(BaseModel):
 
 
 @router.patch("/users/{user_id}", response_model=UserPrivate)
-def update_user(user_id: int, payload: UserAdminUpdate, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+def update_user(
+    user_id: int, payload: UserAdminUpdate, admin: User = Depends(require_admin), db: Session = Depends(get_db)
+):
     user = db.get(User, user_id)
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")

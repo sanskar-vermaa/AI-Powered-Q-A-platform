@@ -30,7 +30,5 @@ def remove_bookmark(question_id: int, user: User = Depends(get_current_user), db
 
 @router.get("/me/bookmarks", response_model=list[QuestionSummary])
 def my_bookmarks(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    bookmarks = db.scalars(
-        select(Bookmark).where(Bookmark.user_id == user.id).order_by(Bookmark.created_at.desc())
-    )
+    bookmarks = db.scalars(select(Bookmark).where(Bookmark.user_id == user.id).order_by(Bookmark.created_at.desc()))
     return question_summaries(db, [b.question for b in bookmarks])

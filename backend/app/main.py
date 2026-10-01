@@ -55,8 +55,22 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    for module in (auth, users, questions, answers, votes, comments, tags, bookmarks, notifications,
-                   moderation, admin, ai, chat, stats):
+    for module in (
+        auth,
+        users,
+        questions,
+        answers,
+        votes,
+        comments,
+        tags,
+        bookmarks,
+        notifications,
+        moderation,
+        admin,
+        ai,
+        chat,
+        stats,
+    ):
         app.include_router(module.router)
 
     @app.get("/api/health", tags=["meta"])

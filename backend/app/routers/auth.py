@@ -14,7 +14,9 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 def _authenticate(db: Session, username: str, password: str) -> User:
     user = db.scalar(
-        select(User).where(or_(func.lower(User.username) == username.lower(), func.lower(User.email) == username.lower()))
+        select(User).where(
+            or_(func.lower(User.username) == username.lower(), func.lower(User.email) == username.lower())
+        )
     )
     if user is None or not verify_password(password, user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")

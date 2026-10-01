@@ -50,10 +50,7 @@ def question_summaries(db: Session, questions: list[Question]) -> list[dict]:
 
 def question_detail(db: Session, question: Question, viewer: User | None) -> dict:
     my_vote = user_votes(db, viewer, "question", [question.id]).get(question.id, 0)
-    bookmarked = bool(
-        viewer
-        and db.get(Bookmark, {"user_id": viewer.id, "question_id": question.id}) is not None
-    )
+    bookmarked = bool(viewer and db.get(Bookmark, {"user_id": viewer.id, "question_id": question.id}) is not None)
     return {
         "id": question.id,
         "title": question.title,

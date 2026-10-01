@@ -49,8 +49,14 @@ def generate_answer(
 
     answer = Answer(body=body, question_id=question.id, author_id=None, is_ai=True)
     db.add(answer)
-    notify(db, question.author_id, "ai_answer", f"The AI assistant answered \"{question.title}\"",
-           f"/questions/{question.id}", actor=user)
+    notify(
+        db,
+        question.author_id,
+        "ai_answer",
+        f'The AI assistant answered "{question.title}"',
+        f"/questions/{question.id}",
+        actor=user,
+    )
     db.commit()
     db.refresh(answer)
     return answer_out(answer, question.accepted_answer_id)

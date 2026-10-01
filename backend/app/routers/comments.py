@@ -21,13 +21,20 @@ def list_question_comments(question_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/questions/{question_id}/comments", response_model=CommentOut, status_code=status.HTTP_201_CREATED)
-def comment_on_question(question_id: int, payload: CommentCreate, user: User = Depends(get_current_user),
-                        db: Session = Depends(get_db)):
+def comment_on_question(
+    question_id: int, payload: CommentCreate, user: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
     question = get_question_or_404(db, question_id)
     comment = Comment(body=payload.body, author_id=user.id, question_id=question.id)
     db.add(comment)
-    notify(db, question.author_id, "comment", f"{user.username} commented on \"{question.title}\"",
-           f"/questions/{question.id}", actor=user)
+    notify(
+        db,
+        question.author_id,
+        "comment",
+        f'{user.username} commented on "{question.title}"',
+        f"/questions/{question.id}",
+        actor=user,
+    )
     db.commit()
     db.refresh(comment)
     return comment
@@ -41,13 +48,20 @@ def list_answer_comments(answer_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/answers/{answer_id}/comments", response_model=CommentOut, status_code=status.HTTP_201_CREATED)
-def comment_on_answer(answer_id: int, payload: CommentCreate, user: User = Depends(get_current_user),
-                      db: Session = Depends(get_db)):
+def comment_on_answer(
+    answer_id: int, payload: CommentCreate, user: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
     answer = get_answer_or_404(db, answer_id)
     comment = Comment(body=payload.body, author_id=user.id, answer_id=answer.id)
     db.add(comment)
-    notify(db, answer.author_id, "comment", f"{user.username} commented on your answer",
-           f"/questions/{answer.question_id}", actor=user)
+    notify(
+        db,
+        answer.author_id,
+        "comment",
+        f"{user.username} commented on your answer",
+        f"/questions/{answer.question_id}",
+        actor=user,
+    )
     db.commit()
     db.refresh(comment)
     return comment

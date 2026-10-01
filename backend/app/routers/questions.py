@@ -148,13 +148,17 @@ def delete_question(question_id: int, user: User = Depends(get_current_user), db
 
 
 @router.post("/{question_id}/accept/{answer_id}", response_model=QuestionDetail)
-def accept_answer(question_id: int, answer_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def accept_answer(
+    question_id: int, answer_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
     from app.services import reputation
     from app.services.notifications import notify
 
     question = get_question_or_404(db, question_id)
     if question.author_id != user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only the question author can accept an answer")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Only the question author can accept an answer"
+        )
     answer = db.get(Answer, answer_id)
     if answer is None or answer.question_id != question.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Answer not found on this question")
@@ -176,8 +180,14 @@ def accept_answer(question_id: int, answer_id: int, user: User = Depends(get_cur
         if answer.author_id != user.id:
             reputation.adjust(db, answer.author, reputation.ANSWER_ACCEPTED)
             reputation.adjust(db, user, reputation.ACCEPTING_ANSWER)
-        notify(db, answer.author, "accepted", f"Your answer to \"{question.title}\" was accepted",
-               f"/questions/{question.id}", actor=user)
+        notify(
+            db,
+            answer.author,
+            "accepted",
+            f'Your answer to "{question.title}" was accepted',
+            f"/questions/{question.id}",
+            actor=user,
+        )
         badges.evaluate(db, answer.author)
     db.commit()
     db.refresh(question)

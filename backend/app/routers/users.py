@@ -60,6 +60,9 @@ def get_profile(username: str, db: Session = Depends(get_db)):
 def user_answers(username: str, db: Session = Depends(get_db), limit: int = Query(20, ge=1, le=100)):
     user = get_user_by_username(db, username)
     answers = db.scalars(
-        select(Answer).where(Answer.author_id == user.id).order_by(Answer.created_at.desc(), Answer.id.desc()).limit(limit)
+        select(Answer)
+        .where(Answer.author_id == user.id)
+        .order_by(Answer.created_at.desc(), Answer.id.desc())
+        .limit(limit)
     )
     return [answer_out(a, a.question.accepted_answer_id) for a in answers]

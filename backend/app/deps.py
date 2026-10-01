@@ -54,5 +54,7 @@ def require_admin(user: User = Depends(get_current_user)) -> User:
 
 def ai_rate_limit(request: Request, user: User = Depends(get_current_user)) -> User:
     if not ai_rate_limiter.allow(f"user:{user.id}"):
-        raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="AI rate limit exceeded, try again soon")
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="AI rate limit exceeded, try again soon"
+        )
     return user

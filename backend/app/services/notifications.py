@@ -3,7 +3,9 @@ from sqlalchemy.orm import Session
 from app.models import Notification, User
 
 
-def notify(db: Session, user: User | int | None, kind: str, message: str, link: str = "", actor: User | None = None) -> None:
+def notify(
+    db: Session, user: User | int | None, kind: str, message: str, link: str = "", actor: User | None = None
+) -> None:
     """Queue a notification for `user`; skips notifying people about their own actions."""
     if user is None:
         return
