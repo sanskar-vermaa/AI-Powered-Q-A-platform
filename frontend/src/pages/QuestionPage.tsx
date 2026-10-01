@@ -16,7 +16,7 @@ import { VoteControls } from "../components/VoteControls";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import { useAsync } from "../hooks/useAsync";
-import { compactNumber, pluralize, timeAgo } from "../utils/format";
+import { compactNumber, pluralize, timeAgo, wasEdited } from "../utils/format";
 
 export function QuestionPage() {
   const id = Number(useParams().id);
@@ -125,7 +125,7 @@ export function QuestionPage() {
           </div>
           <div className="flex flex-wrap gap-4 text-xs text-slate-500">
             <span>Asked {timeAgo(q.created_at)}</span>
-            {q.updated_at !== q.created_at && <span>Modified {timeAgo(q.updated_at)}</span>}
+            {wasEdited(q.created_at, q.updated_at) && <span>Modified {timeAgo(q.updated_at)}</span>}
             <span className="inline-flex items-center gap-1">
               <Eye className="h-3.5 w-3.5" /> {pluralize(q.views, "view")}
             </span>
