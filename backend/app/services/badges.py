@@ -21,7 +21,7 @@ def _award(db: Session, user: User, badge: str, owned: set[str]) -> bool:
         return False
     db.add(UserBadge(user_id=user.id, badge=badge))
     owned.add(badge)
-    notify(db, user, "badge", f"You earned the \"{badge}\" badge: {BADGES[badge]}", f"/users/{user.username}")
+    notify(db, user, "badge", f'You earned the "{badge}" badge: {BADGES[badge]}', f"/users/{user.username}")
     return True
 
 
@@ -39,11 +39,14 @@ def evaluate(db: Session, user: User | None) -> list[str]:
 
     question_count = db.scalar(select(func.count(Question.id)).where(Question.author_id == user.id)) or 0
     answer_count = db.scalar(select(func.count(Answer.id)).where(Answer.author_id == user.id)) or 0
-    accepted = db.scalar(
-        select(func.count(Answer.id))
-        .join(Question, Question.accepted_answer_id == Answer.id)
-        .where(Answer.author_id == user.id)
-    ) or 0
+    accepted = (
+        db.scalar(
+            select(func.count(Answer.id))
+            .join(Question, Question.accepted_answer_id == Answer.id)
+            .where(Answer.author_id == user.id)
+        )
+        or 0
+    )
     best_question = db.scalar(select(func.max(Question.score)).where(Question.author_id == user.id)) or 0
 
     rules = {

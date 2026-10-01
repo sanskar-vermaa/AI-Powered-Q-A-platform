@@ -61,7 +61,9 @@ def resolve_flag(flag_id: int, payload: FlagResolve, db: Session = Depends(get_d
             db.delete(target)
         # Close every other open flag on the content that was just removed.
         for other in db.scalars(
-            select(Flag).where(Flag.target_type == flag.target_type, Flag.target_id == flag.target_id, Flag.status == "open")
+            select(Flag).where(
+                Flag.target_type == flag.target_type, Flag.target_id == flag.target_id, Flag.status == "open"
+            )
         ):
             other.status = "resolved"
     flag.status = payload.status

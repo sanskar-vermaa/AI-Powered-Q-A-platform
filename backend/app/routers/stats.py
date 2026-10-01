@@ -25,9 +25,7 @@ def site_stats(db: Session = Depends(get_db)):
 
 @router.get("/leaderboard", response_model=list[LeaderboardEntry])
 def leaderboard(db: Session = Depends(get_db), limit: int = Query(10, ge=1, le=100)):
-    answer_count = (
-        select(func.count(Answer.id)).where(Answer.author_id == User.id).correlate(User).scalar_subquery()
-    )
+    answer_count = select(func.count(Answer.id)).where(Answer.author_id == User.id).correlate(User).scalar_subquery()
     rows = db.execute(
         select(User.username, User.reputation, answer_count.label("answer_count"))
         .where(User.is_active.is_(True))

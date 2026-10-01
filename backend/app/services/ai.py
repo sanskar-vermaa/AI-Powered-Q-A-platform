@@ -34,7 +34,7 @@ CHAT_SYSTEM_PROMPT = (
 
 TAGS_SYSTEM_PROMPT = (
     "You assign topic tags to questions on a Q&A platform. Reply with a JSON array of 1 to 5 "
-    "short lowercase tags (for example [\"python\", \"fastapi\", \"sqlalchemy\"]) and nothing else. "
+    'short lowercase tags (for example ["python", "fastapi", "sqlalchemy"]) and nothing else. '
     "Prefer well-known technology names. Use hyphens instead of spaces."
 )
 
@@ -42,8 +42,8 @@ IMPROVE_SYSTEM_PROMPT = (
     "You help users improve questions before they post them on a Q&A platform. Rewrite the "
     "question so it is specific, has a descriptive title, and includes what the user tried and "
     "what they expected. Keep the author's meaning and do not invent facts such as error "
-    "messages or versions they did not mention. Reply with a JSON object with keys \"title\" "
-    "(string), \"body\" (Markdown string) and \"tips\" (array of short strings explaining what "
+    'messages or versions they did not mention. Reply with a JSON object with keys "title" '
+    '(string), "body" (Markdown string) and "tips" (array of short strings explaining what '
     "you changed) and nothing else."
 )
 
@@ -239,10 +239,7 @@ class MockProvider:
 
     def chat(self, history: list[ChatTurn]) -> str:
         last = history[-1].content if history else ""
-        return (
-            f"(offline mode) You said: \"{excerpt(last, 200)}\". "
-            "Set `ANTHROPIC_API_KEY` to chat with Claude."
-        )
+        return f'(offline mode) You said: "{excerpt(last, 200)}". Set `ANTHROPIC_API_KEY` to chat with Claude.'
 
     def stream_chat(self, history: list[ChatTurn]) -> Iterator[str]:
         for word in self.chat(history).split(" "):
