@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func, select
+from sqlalchemy import func, select, true
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -26,7 +26,7 @@ def list_users(
     q: str | None = Query(None, max_length=32),
     limit: int = Query(30, ge=1, le=100),
 ):
-    stmt = select(User).where(User.is_active.is_(True))
+    stmt = select(User).where(User.is_active == true())
     if q:
         stmt = stmt.where(User.username.ilike(f"%{q}%"))
     return list(db.scalars(stmt.order_by(User.reputation.desc(), User.id).limit(limit)))

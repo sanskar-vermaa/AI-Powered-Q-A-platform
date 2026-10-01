@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import select, true
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -39,7 +39,7 @@ def generate_answer(
 ):
     """Ask the AI to post an answer to a question. Each question gets at most one AI answer."""
     question = get_question_or_404(db, question_id)
-    existing = db.scalar(select(Answer).where(Answer.question_id == question.id, Answer.is_ai.is_(True)))
+    existing = db.scalar(select(Answer).where(Answer.question_id == question.id, Answer.is_ai == true()))
     if existing is not None:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="This question already has an AI answer")
     try:

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func, select, update
+from sqlalchemy import false, func, select, update
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -19,14 +19,14 @@ def list_notifications(
 ):
     stmt = select(Notification).where(Notification.user_id == user.id)
     if unread_only:
-        stmt = stmt.where(Notification.is_read.is_(False))
+        stmt = stmt.where(Notification.is_read == false())
     return list(db.scalars(stmt.order_by(Notification.id.desc()).limit(limit)))
 
 
 @router.get("/unread-count", response_model=UnreadCount)
 def unread_count(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     count = db.scalar(
-        select(func.count(Notification.id)).where(Notification.user_id == user.id, Notification.is_read.is_(False))
+        select(func.count(Notification.id)).where(Notification.user_id == user.id, Notification.is_read == false())
     )
     return UnreadCount(unread=count or 0)
 
