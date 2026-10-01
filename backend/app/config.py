@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     secret_key: str = DEFAULT_SECRET_KEY
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60 * 24
+    bcrypt_rounds: int = 12
 
     # "claude" uses the Anthropic API, "mock" returns canned answers,
     # "auto" picks claude when an API key is configured.
