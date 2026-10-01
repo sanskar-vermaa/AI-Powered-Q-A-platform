@@ -38,8 +38,25 @@ def _start_turn(db: Session, user: User, payload: ChatRequest) -> tuple[Conversa
     db.add(ChatMessage(conversation_id=conversation.id, role="user", content=payload.message))
     db.commit()
     db.refresh(conversation)
-    history = [ChatTurn(m.role, m.content) for m in conversation.messages[-HISTORY_LIMIT:]]
+    history = merge_turns([ChatTurn(m.role, m.content) for m in conversation.messages[-HISTORY_LIMIT:]])
     return conversation, history
+
+
+def merge_turns(turns: list[ChatTurn]) -> list[ChatTurn]:
+    """Join consecutive messages from the same role and drop a leading assistant turn.
+
+    A failed AI call leaves a user message without a reply, so the stored history can
+    contain back-to-back user messages; the model expects alternating roles.
+    """
+    merged: list[ChatTurn] = []
+    for turn in turns:
+        if merged and merged[-1].role == turn.role:
+            merged[-1] = ChatTurn(turn.role, f"{merged[-1].content}\n\n{turn.content}")
+        else:
+            merged.append(turn)
+    while merged and merged[0].role != "user":
+        merged.pop(0)
+    return merged
 
 
 @router.get("/conversations", response_model=list[ConversationOut])

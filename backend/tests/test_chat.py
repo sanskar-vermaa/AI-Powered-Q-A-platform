@@ -78,3 +78,40 @@ def test_stream_chat_error_event(client, alice):
     app.dependency_overrides[ai_service.get_ai_provider] = lambda: Broken()
     events = parse_sse(client.post("/api/chat/stream", json={"message": "x"}, headers=alice["headers"]).text)
     assert events[-1] == ("error", {"detail": "connection lost"})
+
+
+def test_merge_turns_after_failed_reply():
+    from app.routers.chat import merge_turns
+    from app.services.ai import ChatTurn
+
+    turns = [
+        ChatTurn("assistant", "orphan"),
+        ChatTurn("user", "first"),
+        ChatTurn("user", "retry"),
+        ChatTurn("assistant", "answer"),
+    ]
+    assert merge_turns(turns) == [ChatTurn("user", "first\n\nretry"), ChatTurn("assistant", "answer")]
+
+
+def test_history_alternates_after_provider_failure(client, alice):
+    seen = []
+
+    class Recorder(ai_service.MockProvider):
+        fail = True
+
+        def chat(self, history):
+            seen.append([t.role for t in history])
+            if Recorder.fail:
+                Recorder.fail = False
+                raise AIError("temporary outage")
+            return super().chat(history)
+
+    app.dependency_overrides[ai_service.get_ai_provider] = lambda: Recorder()
+    first = client.post("/api/chat", json={"message": "hello"}, headers=alice["headers"])
+    assert first.status_code == 502
+    conversation_id = client.get("/api/chat/conversations", headers=alice["headers"]).json()[0]["id"]
+    retry = client.post(
+        "/api/chat", json={"message": "hello again", "conversation_id": conversation_id}, headers=alice["headers"]
+    )
+    assert retry.status_code == 200
+    assert seen[-1] == ["user"]
