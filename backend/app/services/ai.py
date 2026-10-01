@@ -91,7 +91,9 @@ def _extract_json(text: str):
     fence = re.search(r"```(?:json)?\s*(.*?)```", text, re.DOTALL)
     if fence:
         text = fence.group(1).strip()
-    for opener, closer in (("[", "]"), ("{", "}")):
+    # Try the outermost value first: whichever bracket type opens earliest.
+    pairs = sorted((("[", "]"), ("{", "}")), key=lambda pair: (text.find(pair[0]) == -1, text.find(pair[0])))
+    for opener, closer in pairs:
         start, end = text.find(opener), text.rfind(closer)
         if start != -1 and end > start:
             try:
