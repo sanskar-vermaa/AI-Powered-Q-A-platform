@@ -1,0 +1,17 @@
+# Lightweight single-container setup using SQLite.
+#   docker compose -f docker-compose.sqlite.yml up --build
+services:
+  app:
+    build: .
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-please-change-this-secret-key-in-production}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      AI_PROVIDER: ${AI_PROVIDER:-auto}
+    ports:
+      - "8000:8000"
+    volumes:
+      - app-data:/data
+    restart: unless-stopped
+
+volumes:
+  app-data:
