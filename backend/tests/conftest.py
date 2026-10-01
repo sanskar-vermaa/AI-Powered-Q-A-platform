@@ -81,8 +81,12 @@ def bob(make_user):
 
 @pytest.fixture
 def make_question(client):
-    def _make(user, title="How do I parse JSON in Python?", body="I have a JSON string and need a dict from it.",
-              tags=("python", "json")):
+    def _make(
+        user,
+        title="How do I parse JSON in Python?",
+        body="I have a JSON string and need a dict from it.",
+        tags=("python", "json"),
+    ):
         response = client.post(
             "/api/questions", json={"title": title, "body": body, "tags": list(tags)}, headers=user["headers"]
         )

@@ -50,7 +50,9 @@ def test_update_question_by_author(client, alice, make_question):
 
 def test_update_question_forbidden_for_others(client, alice, bob, make_question):
     question = make_question(alice)
-    response = client.patch(f"/api/questions/{question['id']}", json={"title": "Hijacked title here"}, headers=bob["headers"])
+    response = client.patch(
+        f"/api/questions/{question['id']}", json={"title": "Hijacked title here"}, headers=bob["headers"]
+    )
     assert response.status_code == 403
 
 
@@ -58,7 +60,9 @@ def test_moderator_can_edit_any_question(client, alice, make_user, make_question
     moderator = make_user("mod", role="moderator")
     question = make_question(alice)
     response = client.patch(
-        f"/api/questions/{question['id']}", json={"body": "Edited by a moderator for clarity."}, headers=moderator["headers"]
+        f"/api/questions/{question['id']}",
+        json={"body": "Edited by a moderator for clarity."},
+        headers=moderator["headers"],
     )
     assert response.status_code == 200
 

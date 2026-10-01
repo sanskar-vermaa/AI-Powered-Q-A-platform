@@ -26,7 +26,9 @@ def test_comment_validation_and_auth(client, alice, make_question):
 
 
 def test_comment_on_missing_targets(client, alice):
-    assert client.post("/api/questions/999/comments", json={"body": "hello"}, headers=alice["headers"]).status_code == 404
+    assert (
+        client.post("/api/questions/999/comments", json={"body": "hello"}, headers=alice["headers"]).status_code == 404
+    )
     assert client.post("/api/answers/999/comments", json={"body": "hello"}, headers=alice["headers"]).status_code == 404
 
 

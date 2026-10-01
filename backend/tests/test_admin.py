@@ -13,7 +13,10 @@ def test_admin_can_promote_and_suspend(client, make_user):
 def test_non_admin_forbidden(client, make_user):
     moderator = make_user("mod", role="moderator")
     bob = make_user("bob")
-    assert client.patch(f"/api/admin/users/{bob['id']}", json={"role": "admin"}, headers=moderator["headers"]).status_code == 403
+    assert (
+        client.patch(f"/api/admin/users/{bob['id']}", json={"role": "admin"}, headers=moderator["headers"]).status_code
+        == 403
+    )
 
 
 def test_admin_cannot_change_self(client, make_user):
@@ -30,4 +33,6 @@ def test_admin_update_missing_user(client, make_user):
 def test_invalid_role(client, make_user):
     admin = make_user("root", role="admin")
     bob = make_user("bob")
-    assert client.patch(f"/api/admin/users/{bob['id']}", json={"role": "god"}, headers=admin["headers"]).status_code == 422
+    assert (
+        client.patch(f"/api/admin/users/{bob['id']}", json={"role": "god"}, headers=admin["headers"]).status_code == 422
+    )
