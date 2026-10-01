@@ -1,4 +1,4 @@
-from app.utils.text import excerpt, jaccard, normalize_tag, normalize_tags, tokenize
+from app.utils.text import excerpt, jaccard, normalize_tag, normalize_tags, strip_markdown, tokenize
 
 
 def test_normalize_tag_lowercases_and_hyphenates():
@@ -35,3 +35,9 @@ def test_excerpt_truncates_and_flattens_whitespace():
     result = excerpt(long, 20)
     assert len(result) <= 20
     assert result.endswith("…")
+
+
+def test_strip_markdown_for_previews():
+    text = "Use **json** and `loads`:\n```python\nimport json\n```\nSee [the docs](https://x.y)."
+    assert " ".join(strip_markdown(text).split()) == "Use json and loads: See the docs."
+    assert excerpt("```\nunclosed fence") == ""
