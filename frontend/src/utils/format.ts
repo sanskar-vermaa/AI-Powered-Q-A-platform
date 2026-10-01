@@ -17,6 +17,11 @@ export function timeAgo(iso: string, now: Date = new Date()): string {
   return "just now";
 }
 
+/** True when a post was changed noticeably after it was created (ignores same-request timestamp jitter). */
+export function wasEdited(createdAt: string, updatedAt: string, thresholdSeconds = 60): boolean {
+  return new Date(updatedAt).getTime() - new Date(createdAt).getTime() > thresholdSeconds * 1000;
+}
+
 export function compactNumber(value: number): string {
   return new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(value);
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { avatarColor, compactNumber, initials, pluralize, timeAgo } from "../utils/format";
+import { avatarColor, compactNumber, initials, pluralize, timeAgo, wasEdited } from "../utils/format";
 
 describe("format utilities", () => {
   const now = new Date("2026-06-15T12:00:00Z");
@@ -21,6 +21,11 @@ describe("format utilities", () => {
     expect(pluralize(1, "answer")).toBe("1 answer");
     expect(pluralize(3, "answer")).toBe("3 answers");
     expect(pluralize(0, "reply", "replies")).toBe("0 replies");
+  });
+
+  it("detects real edits only", () => {
+    expect(wasEdited("2026-06-15T12:00:00.000Z", "2026-06-15T12:00:00.004Z")).toBe(false);
+    expect(wasEdited("2026-06-15T12:00:00Z", "2026-06-15T12:05:00Z")).toBe(true);
   });
 
   it("builds avatar initials and stable colors", () => {
