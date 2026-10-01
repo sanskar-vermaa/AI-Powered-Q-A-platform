@@ -51,11 +51,11 @@ export function QuestionsPage() {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-900">
+        <div className="inline-flex max-w-full overflow-x-auto rounded-lg border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-900">
           {SORTS.map((option) => (
             <button
               key={option.value}
-              className={`rounded-md px-3 py-1.5 text-sm ${
+              className={`shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 text-sm ${
                 sort === option.value
                   ? "bg-brand-600 text-white"
                   : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
