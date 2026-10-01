@@ -41,7 +41,7 @@ The AI runs on the Claude API (`claude-opus-5-5` by default) with server-side re
 ### Product quality
 - Responsive layout with a mobile drawer, dark mode, toasts, loading/empty/error states
 - Lazy-loaded routes; untrusted Markdown is rendered without raw HTML
-- 164 backend tests (97% coverage) run on SQLite **and Oracle Database**, plus 36 frontend tests
+- 166 backend tests (98% coverage) run on SQLite **and Oracle Database**, plus 36 frontend tests
 - Multi-stage Docker image (non-root, healthcheck) and docker-compose with Oracle
 
 | Question with an AI answer | Ask page with AI tools |
