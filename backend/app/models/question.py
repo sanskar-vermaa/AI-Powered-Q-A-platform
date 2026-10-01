@@ -22,7 +22,8 @@ class Question(TimestampMixin, Base):
     views: Mapped[int] = mapped_column(Integer, default=0)
     score: Mapped[int] = mapped_column(Integer, default=0)
     accepted_answer_id: Mapped[int | None] = mapped_column(
-        ForeignKey("answers.id", use_alter=True, ondelete="SET NULL"), nullable=True
+        ForeignKey("answers.id", use_alter=True, name="fk_questions_accepted_answer", ondelete="SET NULL"),
+        nullable=True,
     )
 
     author = relationship("User", back_populates="questions")
