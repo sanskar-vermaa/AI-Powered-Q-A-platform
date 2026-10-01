@@ -29,7 +29,7 @@ export function AssistantPage() {
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const abort = useRef<AbortController | null>(null);
-  const bottom = useRef<HTMLDivElement>(null);
+  const pane = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     api.chat
@@ -39,7 +39,8 @@ export function AssistantPage() {
   }, []);
 
   useEffect(() => {
-    bottom.current?.scrollIntoView?.({ behavior: "smooth" });
+    // Scroll only the message pane; scrollIntoView would also scroll the page under the sticky header.
+    if (pane.current) pane.current.scrollTop = pane.current.scrollHeight;
   }, [messages]);
 
   async function openConversation(id: number) {
@@ -148,7 +149,7 @@ export function AssistantPage() {
       </aside>
 
       <section className="card flex min-h-0 flex-col">
-        <div className="flex-1 space-y-6 overflow-y-auto p-4 sm:p-6">
+        <div ref={pane} className="flex-1 space-y-6 overflow-y-auto p-4 sm:p-6">
           {messages.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
               <span className="rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 p-4 text-white shadow-lg">
@@ -192,7 +193,6 @@ export function AssistantPage() {
               </div>
             ))
           )}
-          <div ref={bottom} />
         </div>
         <form onSubmit={submit} className="flex items-end gap-2 border-t border-slate-200 p-3 dark:border-slate-800">
           <textarea
