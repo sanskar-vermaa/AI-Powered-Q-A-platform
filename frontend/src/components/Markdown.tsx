@@ -7,7 +7,9 @@ import remarkGfm from "remark-gfm";
 /** Render user Markdown safely: raw HTML is not allowed, links open in a new tab. */
 export function Markdown({ children, className = "" }: { children: string; className?: string }) {
   return (
-    <div className={`prose prose-slate max-w-none dark:prose-invert prose-pre:bg-slate-900 ${className}`}>
+    <div
+      className={`prose prose-slate max-w-none dark:prose-invert prose-pre:bg-slate-900 prose-code:before:content-none prose-code:after:content-none ${className}`}
+    >
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[[rehypeHighlight, { detect: true, ignoreMissing: true }]]}
