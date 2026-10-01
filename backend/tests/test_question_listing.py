@@ -1,10 +1,16 @@
 def seed(client, alice, bob, make_question, make_answer):
-    q1 = make_question(alice, title="How do I sort a list in Python?", body="I need to sort numbers ascending.",
-                       tags=["python"])
-    q2 = make_question(alice, title="What is a closure in JavaScript?", body="Explain closures with an example.",
-                       tags=["javascript"])
-    q3 = make_question(bob, title="Why is my SQL query so slow?", body="A SELECT with joins takes ten seconds.",
-                       tags=["sql", "performance"])
+    q1 = make_question(
+        alice, title="How do I sort a list in Python?", body="I need to sort numbers ascending.", tags=["python"]
+    )
+    q2 = make_question(
+        alice, title="What is a closure in JavaScript?", body="Explain closures with an example.", tags=["javascript"]
+    )
+    q3 = make_question(
+        bob,
+        title="Why is my SQL query so slow?",
+        body="A SELECT with joins takes ten seconds.",
+        tags=["sql", "performance"],
+    )
     make_answer(bob, q1["id"])
     client.post(f"/api/questions/{q2['id']}/vote", json={"value": 1}, headers=bob["headers"])
     return q1, q2, q3

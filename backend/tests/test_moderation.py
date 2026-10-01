@@ -8,7 +8,9 @@ def moderator(make_user):
 
 def flag(client, user, target_type, target_id, reason="spam"):
     return client.post(
-        "/api/flags", json={"target_type": target_type, "target_id": target_id, "reason": reason}, headers=user["headers"]
+        "/api/flags",
+        json={"target_type": target_type, "target_id": target_id, "reason": reason},
+        headers=user["headers"],
     )
 
 
@@ -42,7 +44,9 @@ def test_queue_requires_staff(client, bob, moderator):
 def test_dismiss_flag(client, alice, bob, moderator, make_question):
     question = make_question(alice)
     flag_id = flag(client, bob, "question", question["id"]).json()["id"]
-    response = client.post(f"/api/moderation/flags/{flag_id}", json={"status": "dismissed"}, headers=moderator["headers"])
+    response = client.post(
+        f"/api/moderation/flags/{flag_id}", json={"status": "dismissed"}, headers=moderator["headers"]
+    )
     assert response.json()["status"] == "dismissed"
     assert client.get(f"/api/questions/{question['id']}").status_code == 200
     assert client.get("/api/moderation/flags", headers=moderator["headers"]).json() == []
@@ -57,7 +61,9 @@ def test_resolve_and_delete_answer(client, alice, bob, make_user, moderator, mak
     first = flag(client, alice, "answer", answer["id"]).json()["id"]
     flag(client, carol, "answer", answer["id"])
     response = client.post(
-        f"/api/moderation/flags/{first}", json={"status": "resolved", "delete_content": True}, headers=moderator["headers"]
+        f"/api/moderation/flags/{first}",
+        json={"status": "resolved", "delete_content": True},
+        headers=moderator["headers"],
     )
     assert response.status_code == 200
     assert client.get(f"/api/answers/{answer['id']}").status_code == 404
@@ -73,7 +79,8 @@ def test_resolve_and_delete_question_and_comment(client, alice, bob, moderator, 
     for target_type, target_id in (("comment", comment["id"]), ("question", question["id"])):
         flag_id = flag(client, alice if target_type == "comment" else bob, target_type, target_id).json()["id"]
         client.post(
-            f"/api/moderation/flags/{flag_id}", json={"status": "resolved", "delete_content": True},
+            f"/api/moderation/flags/{flag_id}",
+            json={"status": "resolved", "delete_content": True},
             headers=moderator["headers"],
         )
     assert client.get(f"/api/questions/{question['id']}").status_code == 404

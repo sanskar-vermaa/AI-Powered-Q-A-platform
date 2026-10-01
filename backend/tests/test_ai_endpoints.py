@@ -71,7 +71,8 @@ def test_suggest_tags(client, alice, mock_ai):
 
 def test_improve_question(client, alice, mock_ai):
     response = client.post(
-        "/api/ai/improve-question", json={"title": "my code broken", "body": "it does not work at all"},
+        "/api/ai/improve-question",
+        json={"title": "my code broken", "body": "it does not work at all"},
         headers=alice["headers"],
     )
     data = response.json()

@@ -25,21 +25,29 @@ def test_chat_creates_conversation(client, alice, mock_ai):
 
 def test_chat_continues_conversation(client, alice, mock_ai):
     first = client.post("/api/chat", json={"message": "Hello"}, headers=alice["headers"]).json()
-    client.post("/api/chat", json={"message": "Again", "conversation_id": first["conversation_id"]}, headers=alice["headers"])
+    client.post(
+        "/api/chat", json={"message": "Again", "conversation_id": first["conversation_id"]}, headers=alice["headers"]
+    )
     detail = client.get(f"/api/chat/conversations/{first['conversation_id']}", headers=alice["headers"]).json()
     assert [m["role"] for m in detail["messages"]] == ["user", "assistant", "user", "assistant"]
 
 
 def test_conversations_are_private(client, alice, bob, mock_ai):
-    conversation_id = client.post("/api/chat", json={"message": "secret"}, headers=alice["headers"]).json()["conversation_id"]
+    conversation_id = client.post("/api/chat", json={"message": "secret"}, headers=alice["headers"]).json()[
+        "conversation_id"
+    ]
     assert client.get(f"/api/chat/conversations/{conversation_id}", headers=bob["headers"]).status_code == 404
-    response = client.post("/api/chat", json={"message": "hi", "conversation_id": conversation_id}, headers=bob["headers"])
+    response = client.post(
+        "/api/chat", json={"message": "hi", "conversation_id": conversation_id}, headers=bob["headers"]
+    )
     assert response.status_code == 404
     assert client.get("/api/chat/conversations", headers=bob["headers"]).json() == []
 
 
 def test_delete_conversation(client, alice, mock_ai):
-    conversation_id = client.post("/api/chat", json={"message": "bye"}, headers=alice["headers"]).json()["conversation_id"]
+    conversation_id = client.post("/api/chat", json={"message": "bye"}, headers=alice["headers"]).json()[
+        "conversation_id"
+    ]
     assert client.delete(f"/api/chat/conversations/{conversation_id}", headers=alice["headers"]).status_code == 204
     assert client.get("/api/chat/conversations", headers=alice["headers"]).json() == []
 
