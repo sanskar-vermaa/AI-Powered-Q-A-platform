@@ -81,6 +81,12 @@ make dev-frontend  # UI on http://localhost:5173 (proxies /api to the backend)
 
 Demo accounts after seeding: `admin`, `priya` (moderator), `marcus`, `lena`, `diego`, all with password `demo12345`.
 
+### Option 4: Deploy to the cloud
+
+- **Vercel:** import the repo and connect a Neon Postgres database ([guide](docs/DEPLOYMENT.md#vercel-free-tier))
+- **Render:** New → Blueprint uses [`render.yaml`](render.yaml) to create the app and a PostgreSQL database in one step
+- **Any Docker host:** the image serves the API and UI on `$PORT` (default 8000)
+
 ## Configuration
 
 All settings are environment variables (or a `.env` file); see [`.env.example`](.env.example).
