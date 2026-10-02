@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0
+
+- Deploy to Vercel (static frontend + Python function, Neon Postgres) and Render (Blueprint with PostgreSQL)
+- Accept `postgres://` database URLs handed out by hosting platforms
+- Docker image binds to `$PORT` when the platform sets it
+- Dependabot, issue templates and a pull request template
+
 ## 1.0.0
 
 First release.
