@@ -11,7 +11,21 @@ class Base(DeclarativeBase):
     pass
 
 
+def normalize_database_url(url: str) -> str:
+    """Accept the `postgres://` scheme that Render, Heroku and Fly hand out.
+
+    SQLAlchemy 2 only recognises `postgresql://`, so a raw platform URL would
+    crash the app on start-up.
+    """
+    if url.startswith("postgres://"):
+        return "postgresql+psycopg2://" + url[len("postgres://") :]
+    if url.startswith("postgresql://"):
+        return "postgresql+psycopg2://" + url[len("postgresql://") :]
+    return url
+
+
 def _make_engine(url: str):
+    url = normalize_database_url(url)
     if not url.startswith("sqlite"):
         return create_engine(url, pool_pre_ping=True)
 
