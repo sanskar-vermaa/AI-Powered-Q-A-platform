@@ -10,6 +10,24 @@ The app ships as one Docker image that serves both the API and the React fronten
 4. **Put the app behind HTTPS** (a load balancer or a reverse proxy such as Nginx or Caddy). The container runs uvicorn with `--proxy-headers`.
 5. **Register the admin account first.** The first account created becomes the administrator.
 
+## One-click hosting
+
+### Vercel (free tier)
+
+The repository ships with [`vercel.json`](../vercel.json) and an [`api/index.py`](../api/index.py) entry point: Vercel serves the React build statically and runs the FastAPI app as a Python serverless function.
+
+1. **Add New → Project** in Vercel and import this repository (no framework preset, root directory `/`).
+2. **Storage → Create → Neon (Postgres)** and connect it to the project. Neon sets `POSTGRES_URL`, which the entry point picks up automatically.
+3. Set `SECRET_KEY` (and optionally `ANTHROPIC_API_KEY`) under **Settings → Environment Variables**, then redeploy.
+
+Without a database the deploy still works, but uses an ephemeral SQLite file in `/tmp` that resets whenever the function cold-starts. That suits a demo, not real users.
+
+### Render (Docker + PostgreSQL)
+
+[`render.yaml`](../render.yaml) is a Render Blueprint: **New → Blueprint**, pick the repository, and Render builds the Docker image, provisions a free PostgreSQL database, generates `SECRET_KEY` and wires `DATABASE_URL`. Only `ANTHROPIC_API_KEY` is asked for (leave it empty for offline AI mode).
+
+The image listens on `$PORT` when the platform provides one, so it also runs unchanged on Railway, Fly.io and Google Cloud Run. `postgres://` URLs from these platforms are accepted as-is.
+
 ## Oracle Database
 
 ```bash
